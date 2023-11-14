@@ -1,0 +1,79 @@
+<?php
+
+// Define the Content Type and Taxonomy
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\node\Entity\NodeType;
+
+/**
+ * Implements hook_install().
+ */
+function custom_content_module_install() {
+  // Create a custom content type.
+  $node_type = NodeType::create([
+    'type' => 'custom_content_type',
+    'name' => 'Custom Content Type',
+  ]);
+  $node_type->save();
+
+  // Create an associated taxonomy vocabulary.
+  $vocab = \Drupal\taxonomy\Entity\Vocabulary::create([
+    'vid' => 'custom_taxonomy',
+    'name' => 'Custom Taxonomy',
+  ]);
+  $vocab->save();
+}
+
+// Define the Settings Page
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements the settings form.
+ */
+class CustomContentModuleSettingsForm extends FormBase {
+
+  public function getFormId() {
+    return 'custom_content_module_settings_form';
+  }
+
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    // Add your 5 fields here.
+    // Example field:
+    $form['field1'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Field 1'),
+    ];
+
+    // Add more fields...
+
+    $form['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Save'),
+    ];
+
+    return $form;
+  }
+
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Process and save the settings here.
+  }
+}
+
+// Define a Menu Route for the Settings Page
+/**
+ * Implements hook_menu().
+ */
+function custom_content_module_menu() {
+    $items = [];
+  
+    $items['admin/config/custom-content-module'] = [
+      'title' => 'Custom Content Module Settings',
+      'description' => 'Configure settings for Custom Content Module',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => ['\Drupal\custom_content_module\Form\CustomContentModuleSettingsForm'],
+      'access arguments' => ['administer site configuration'],
+    ];
+  
+    return $items;
+}
+  
